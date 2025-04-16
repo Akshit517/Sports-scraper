@@ -4,7 +4,8 @@ from scraper import Scraper
 
 def main():
    # CricketController().run()
-    Scraper.start("Sachin Tendulkar")
+    scr = Scraper("virat kohli")
+    scr.start()
 
 
 if __name__ == "__main__":
