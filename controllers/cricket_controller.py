@@ -18,6 +18,11 @@ class CricketController:
             matches = parser.parse()
 
             exporter = CSVExporter(filepath="data/live_scores.csv")
-            exporter.export(matches)
+
+            if exporter.has_changed(matches):
+                print("Data changed. Updating CSV...")
+                exporter.export(matches)
+            else:
+                print("No change in data. Skipping update...")
         finally:
             self.browser.quit()
