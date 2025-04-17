@@ -30,7 +30,7 @@ class Scraper:
             value_td = row.find_next_sibling("td")
             value = value_td.get_text(strip=True) if value_td else ""
             data[key.rstrip(":")] = value
-            print(f"{key}:{value}")
+            # print(f"{key}:{value}")
 
         return data
 
@@ -48,7 +48,7 @@ class Scraper:
             if index < 6:
                 stats["Format"] = formats[index]
 
-        print(all_stats)  # uncomment to debug
+        # print(all_stats)  # uncomment to debug
 
         json_output = json.dumps(all_stats, indent=4)
         with open("player_stats.json", "w") as f:
