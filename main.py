@@ -1,13 +1,16 @@
 from controllers.cricket_controller import CricketController
 from scraper import Scraper
-from commentary_scraper.live_match_stats import LiveMatchStats
+from scraper import Commentary
 
 
-def main():   
-    
-    stats=LiveMatchStats()
-    stats.get_Stats()
-    
+def main():
+   # CricketController().run()
+    scr = Scraper("Avesh khan")
+    scr.start()
+
+    cmntry = Commentary("115167")
+    cmntry.get_commentary()
+
 
 if __name__ == "__main__":
     main()
