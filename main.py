@@ -4,7 +4,7 @@ from scraper import Scraper
 
 def main():
    # CricketController().run()
-    scr = Scraper("virat kohli")
+    scr = Scraper("Avesh khan")
     scr.start()
 
 
