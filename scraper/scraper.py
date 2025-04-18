@@ -51,8 +51,8 @@ class Scraper:
         # print(all_stats)  # uncomment to debug
 
         json_output = json.dumps(all_stats, indent=4)
-        with open("player_stats.json", "w") as f:
-            f.write(json_output)
+        #with open("player_stats.json", "w") as f:
+         #   f.write(json_output)
         return json_output
 
     def extract_table_data(self, table):
@@ -104,8 +104,12 @@ class Scraper:
             soup = BeautifulSoup(self.driver.page_source, "html.parser")
 
             # self.get_player_id()
-            self.get_player_info(soup)
-            self.source_table_data(soup)
+            info =self.get_player_info(soup)
+            stats =self.source_table_data(soup)
+            return json.dumps({
+    "info": info,
+    "stats": json.loads(stats)
+}, indent=4)
 
         finally:
             self.driver.quit()

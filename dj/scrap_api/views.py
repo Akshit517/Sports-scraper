@@ -12,8 +12,9 @@ from rest_framework import status
 from django.http import JsonResponse, Http404
 from django.conf import settings
 import google.generativeai as genai
-
+from scraper import Scraper
 from rest_framework.decorators import api_view
+import json
 
 class LiveCricketStatsView(APIView):
     def get(self, request):
@@ -52,10 +53,34 @@ def chat_with_gemini(request):
     if not user_input:
         return Response({"error": "Message is required"}, status=400)
 
+    
     try:
-        model = genai.GenerativeModel('models/gemini-2.0-flash')
-        chat = model.start_chat(history=[])
-        response = chat.send_message(user_input)
-        return Response({"reply": response.text})
+        classifier_model = genai.GenerativeModel('models/gemini-2.0-flash')
+        classification_prompt = f"""
+        You are a helper. If the user is asking for stats of a player, reply with only the word 'stats'.
+        Otherwise, reply with 'general'.
+        User: {user_input}
+        """
+        classification = classifier_model.generate_content(classification_prompt)
+
+        if 'stats' in classification.text.lower():
+            stats_data = Scraper(user_input).start()
+           
+            stats_str = json.dumps(stats_data, indent=2)[:3000]
+
+            pretty_prompt = f"Prettify and summarize the following cricket stats:\n\n```{stats_str}``` and if user question is related to particular stats then only return user answer.\nUser: {user_input}"
+
+            pretty_model = genai.GenerativeModel('models/gemini-2.0-flash')
+            summary = pretty_model.generate_content(pretty_prompt)
+
+            return Response({"reply": summary.text})
+        else:
+            model = genai.GenerativeModel('models/gemini-2.0-flash')
+            chat = model.start_chat(history=[])
+            response = chat.send_message(
+                "You are a cricket chatbot that gives info about players or matches.\nUser input: " + user_input
+            )
+            return Response({"reply": response.text})
+
     except Exception as e:
         return Response({"error": str(e)}, status=500)
