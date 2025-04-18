@@ -11,6 +11,9 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.http import JsonResponse, Http404
 from django.conf import settings
+import google.generativeai as genai
+
+from rest_framework.decorators import api_view
 
 class LiveCricketStatsView(APIView):
     def get(self, request):
@@ -39,3 +42,21 @@ def get_commentary(request, code):
         "match_code": code,
         "commentary": commentary
     })
+
+genai.configure(api_key=settings.GEMINI_API_KEY)
+
+
+@api_view(['POST'])
+def chat_with_gemini(request):
+    user_input = request.data.get('message', '')
+    if not user_input:
+        return Response({"error": "Message is required"}, status=400)
+
+    try:
+        model = genai.GenerativeModel('models/gemini-1.5-flash')
+        chat = model.start_chat(history=[])
+        response = chat.send_message(user_input)
+        return Response({"reply": response.text})
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+

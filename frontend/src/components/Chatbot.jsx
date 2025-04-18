@@ -6,6 +6,8 @@ import {
   XMarkIcon 
 } from '@heroicons/react/24/solid';
 
+import axios from 'axios';
+
 export default function Chatbot() {
   const [isMobile, setIsMobile] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -21,7 +23,25 @@ export default function Chatbot() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
- 
+ const [message, setMessage] = useState('');
+  const [response, setResponse] = useState('');
+
+ const handleSend = async () => {
+  try {
+    const response = await axios.post("http://localhost:4001/api/chatbot/", {
+      message: message, // replace with your input variable
+    }, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    console.log(response.data.reply);
+    setResponse(response.data.reply);
+  } catch (error) {
+    console.error("Chat error:", error.response?.data || error.message);
+  }
+};
   if (isMobile) {
     return (
       <>
@@ -92,6 +112,9 @@ export default function Chatbot() {
       <div className="flex-1 p-4 overflow-y-auto">
         <div className="bg-dark-600 rounded-lg p-3 mb-3 max-w-[80%] text-white">
           <p>Welcome! Ask me about live matches.</p>
+          </div>
+        <div className="bg-dark-600 rounded-lg p-3 mb-3 max-w-[80%] text-white">
+          <p>{response}</p>
         </div>
       </div>
       
@@ -105,8 +128,9 @@ export default function Chatbot() {
             type="text" 
             placeholder="Type your question..." 
             className="flex-1 p-2 rounded-lg bg-dark-700 border border-dark-500 focus:outline-none focus:ring-1 focus:ring-dark-400 text-white"
+            onChange={(e) => setMessage(e.target.value)}
           />
-          <button className="p-2 bg-dark-400 text-white rounded-lg hover:bg-dark-300">
+          <button className="p-2 bg-dark-400 text-white rounded-lg hover:bg-dark-300" onClick={handleSend}>
             <PaperAirplaneIcon className="h-5 w-5" />
           </button>
         </div>
