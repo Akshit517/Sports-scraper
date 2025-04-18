@@ -1,0 +1,28 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth transitions */
+.match-card {
+  transition: all 0.2s ease;
+}
+
+/* Ensure no horizontal scroll */
+html, body {
+  overflow-x: hidden;
+}
+
+/* Smooth scrolling */
+.scroll-area {
+  scroll-behavior: smooth;
+}
