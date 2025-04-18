@@ -10,3 +10,5 @@ class Match:
     score1: str
     score2: str
     status: str
+    match_id: str
+    series_id: str

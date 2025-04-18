@@ -35,13 +35,15 @@ class CSVExporter:
         if not all(is_dataclass(item) for item in new_items):
             raise TypeError("All new items must be dataclass instances.")
 
-        new_data = {tuple(asdict(item).items()) for item in new_items}
+        headers = list(asdict(new_items[0]).keys())
+
+        new_data = [tuple(str(asdict(item)[key]) for key in headers) for item in new_items]
 
         if not os.path.exists(self.filepath):
-            return True  # No existing file = considered changed
+            return True
 
         with open(self.filepath, mode='r', encoding='utf-8') as file:
             reader = csv.DictReader(file)
-            existing_data = {tuple(row.items()) for row in reader}
+            existing_data = [tuple(row[key] for key in headers) for row in reader]
 
         return new_data != existing_data
