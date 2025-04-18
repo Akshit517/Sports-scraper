@@ -6,14 +6,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 import csv
+import os
 
 
 class Commentary:
-    def __init__(self, url):
+    def __init__(self, url, cooldown_time):
         self.options = Options()
         self.options.add_argument("--headless")
         self.url = f"https://www.cricbuzz.com/live-cricket-scores/{url}"
         self.code = url
+        self.cooldown_time = cooldown_time
+
+        if not os.path.exists("data"):
+            os.makedirs("data")
 
     def get_commentary(self):
         driver = webdriver.Chrome(service=Service(), options=self.options)
@@ -55,9 +60,19 @@ class Commentary:
 
                 continue
 
-        driver.quit()
-        filename = f"{self.code}.csv"
+        filename = f"data/{self.code}.csv"
         with open(filename, mode='w', newline='', encoding='utf-8') as file:
             writer = csv.writer(file)
             writer.writerow(["Ball", "Commentary"])
             writer.writerows(data)
+
+        driver.quit()
+        print(f"Commentary data saved to {filename}.")
+
+    def start_scraping(self):
+        while True:
+            print(f"Starting new scrape for {self.code}...")
+            self.get_commentary()
+            print(
+                f"Waiting for {self.cooldown_time} seconds before next scrape.")
+            time.sleep(self.cooldown_time)
