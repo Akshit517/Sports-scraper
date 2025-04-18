@@ -53,10 +53,9 @@ def chat_with_gemini(request):
         return Response({"error": "Message is required"}, status=400)
 
     try:
-        model = genai.GenerativeModel('models/gemini-1.5-flash')
+        model = genai.GenerativeModel('models/gemini-2.0-flash')
         chat = model.start_chat(history=[])
         response = chat.send_message(user_input)
         return Response({"reply": response.text})
     except Exception as e:
         return Response({"error": str(e)}, status=500)
-
