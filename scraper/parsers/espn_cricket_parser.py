@@ -1,6 +1,7 @@
 from parsers.base_parser import BaseParser
 from models.match_model import Match
 import re
+from datetime import datetime, timezone
 
 class ESPNLiveCricketScoreParser(BaseParser):
     def parse(self) -> list[Match]:
@@ -13,14 +14,14 @@ class ESPNLiveCricketScoreParser(BaseParser):
                 match_id = "unknown"
                 series_id = "unknown"
 
-                # Try extracting match/series ID from the link
+                # Extract match/series ID from the link
                 link_elem = card.select_one("a")
                 if link_elem and link_elem.has_attr('href'):
                     match_url = link_elem['href']
                     match_id = self.extract_match_id(match_url)
                     series_id = self.extract_series_id(match_url)
 
-                # Get series name
+                # Series name
                 series_elem = card.find_previous("h2")
                 series = series_elem.get_text(strip=True) if series_elem else "Unknown Series"
 
@@ -45,7 +46,10 @@ class ESPNLiveCricketScoreParser(BaseParser):
                 status_elem = card.select_one("p.ds-text-tight-s.ds-font-medium")
                 status = status_elem.get_text(strip=True) if status_elem else "N/A"
 
-                # Create match object with all required fields
+                # Timestamp
+                last_updated = datetime.now(timezone.utc).replace(tzinfo=None).isoformat()  # Remove timezone info
+
+                # Create Match object
                 match = Match(
                     series,
                     team1,
@@ -56,7 +60,8 @@ class ESPNLiveCricketScoreParser(BaseParser):
                     score2,
                     status,
                     match_id,
-                    series_id
+                    series_id,
+                    last_updated
                 )
                 matches.append(match)
 
@@ -71,6 +76,5 @@ class ESPNLiveCricketScoreParser(BaseParser):
         return match.group(1) if match else "unknown"
 
     def extract_series_id(self, url: str) -> str:
-        """ Extract series ID from the match URL """
         match = re.search(r'/series/[^/]+-(\d+)', url)
         return match.group(1) if match else "unknown"

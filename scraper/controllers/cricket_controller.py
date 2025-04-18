@@ -5,12 +5,12 @@ from parsers import ESPNLiveCricketScoreParser
 from exporters import CSVExporter
 
 class CricketController:
-    def __init__(self, refresh_interval=10, run_duration=300):
+    def __init__(self, refresh_interval=10, run_duration=3000):
         self.refresh_interval = refresh_interval  # seconds between checks
         self.run_duration = run_duration          # total runtime in seconds
         self.browser = BaseDriver(binary_path="/snap/firefox/current/usr/lib/firefox/firefox")
         self.driver = self.browser.get_driver()
-        self.exporter = CSVExporter(filepath="data/live_scores.csv")
+        self.exporter = CSVExporter(filepath="data/latest_scores.csv")
 
     def run(self):
         try:

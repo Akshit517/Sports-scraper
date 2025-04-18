@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 @dataclass
 class Match:
@@ -12,3 +13,4 @@ class Match:
     status: str
     match_id: str
     series_id: str
+    last_updated: datetime
